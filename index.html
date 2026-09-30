@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для тебя</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050505; 
+            display: flex;
+            justify-content: center;
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            font-family: 'Georgia', serif; 
+        }
+
+        /* --- НОВЫЕ СТИЛИ ДЛЯ СТАРТОВОГО ЭКРАНА --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #050505;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 1s ease-out;
+        }
+
+        .intro-text {
+            color: #ffb3c6;
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(255, 179, 198, 0.4);
+            max-width: 600px;
+            line-height: 1.5;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+        }
+
+        .start-btn {
+            background-color: transparent;
+            color: #ff2a5f;
+            border: 1px solid rgba(255, 42, 95, 0.8);
+            padding: 12px 40px;
+            font-size: 1.2rem;
+            font-family: 'Georgia', serif;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 42, 95, 0.2), inset 0 0 10px rgba(255, 42, 95, 0.1);
+            text-transform: lowercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:hover {
+            background-color: rgba(255, 42, 95, 0.15);
+            color: #ffb3c6;
+            box-shadow: 0 0 25px rgba(255, 42, 95, 0.6), inset 0 0 15px rgba(255, 42, 95, 0.4);
+            border-color: #ff2a5f;
+        }
+
+        /* Обертка для основного контента (скрыта до нажатия) */
+        #main-content {
+            display: none; 
+            width: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+            justify-content: center;
+        }
+        /* ------------------------------------------- */
+        
+        .heart-bg-wrapper {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1; 
+            animation: heartbeat 1.5s infinite; 
+        }
+
+        .center-letter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 42, 95, 0.15); 
+            font-size: 15rem; 
+            font-weight: bold;
+            opacity: 0;
+            animation: fadeIn 2s forwards 0.5s;
+            z-index: 0; 
+        }
+
+        .text-element {
+            position: absolute;
+            color: rgba(255, 42, 95, 0.4); 
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            animation: fadeIn 1s forwards;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: nowrap;
+        }
+
+        .main-message-container {
+            position: relative;
+            z-index: 10; 
+            text-align: center;
+            padding: 10vh 20px 50px 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .main-text {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin: 10px 0 30px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: 
+                slideUp 2s ease-out 1s forwards, 
+                textGlow 3s infinite alternate 3s;
+            text-shadow: 0 0 10px rgba(255, 42, 95, 0.8);
+        }
+
+        #typing-text {
+            color: #ffb3c6;
+            font-size: 1.2rem;
+            line-height: 1.35; 
+            text-shadow: 0 0 5px rgba(255, 179, 198, 0.3);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #ffb3c6;
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.03); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.03); }
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes textGlow {
+            from { text-shadow: 0 0 10px rgba(255, 42, 95, 0.8), 0 0 20px rgba(255, 42, 95, 0.5); }
+            to { text-shadow: 0 0 20px #ff2a5f, 0 0 30px #ff2a5f, 0 0 40px #ff2a5f; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .main-text { font-size: 1.8rem; }
+            #typing-text { font-size: 1.1rem; }
+            .center-letter { font-size: 12rem; } 
+            .intro-text { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- СТАРТОВЫЙ ЭКРАН -->
+    <div id="intro-screen">
+        <div class="intro-text">Ань, при прочтении, пожалуйста, не суди строго, люблю.</div>
+        <button id="start-btn" class="start-btn">открыть</button>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ (изначально скрыт) -->
+    <div id="main-content">
+        <div class="heart-bg-wrapper" id="heart-wrapper">
+            <div class="center-letter">А</div>
+        </div>
+
+        <div class="main-message-container">
+            <h1 class="main-text">Моя любимая вселенная</h1>
+            <div id="typing-text"></div>
+        </div>
+    </div>
+
+    <script>
+        // Логика переключения экранов
+        document.getElementById('start-btn').addEventListener('click', function() {
+            const intro = document.getElementById('intro-screen');
+            const mainContent = document.getElementById('main-content');
+
+            // Плавно скрываем начальный экран
+            intro.style.opacity = '0';
+            
+            setTimeout(() => {
+                intro.style.display = 'none';
+                mainContent.style.display = 'flex'; // Показываем основной блок
+                
+                // Даем микро-задержку перед появлением для плавности
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                    startAnimations(); // Запускаем всю генерацию анимаций
+                }, 50);
+
+            }, 1000); // 1 секунда на затухание текста
+        });
+
+        // Функция запуска оригинальных анимаций (ваши исходные скрипты)
+        function startAnimations() {
+            const container = document.getElementById('heart-wrapper');
+            const bgText = "I love you"; 
+            let delay = 0;
+
+            for (let t = 0; t < Math.PI * 2; t += 0.05) {
+                let x = 16 * Math.pow(Math.sin(t), 3);
+                let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+
+                const el = document.createElement('div');
+                el.className = 'text-element';
+                el.innerText = bgText;
+
+                el.style.left = `calc(50% + ${x * 20}px)`;
+                el.style.top = `calc(50% + ${y * 20}px)`;
+                el.style.animationDelay = `${delay}s`;
+                delay += 0.03; 
+
+                container.appendChild(el);
+            }
+
+            const textLines = [
+                "Каждый день с тобой — это особенный подарок.",
+                "Спасибо, что ты есть. Каждый день рядом с тобой наполнял меня чем-то большим, чем просто эмоции.",
+                "Знаешь, уже довольно давно я хотел сказать тебе кое-что важное:",
+                "Мы уже достаточно давно стали больше, чем просто друзьями. В такие моменты я не особо люблю говорить о себе, поэтому хочу рассказать о тебе.",
+                "Иногда я задумываюсь: «Как всё это началось?» Всё началось в тот момент, когда я увидел тебя и твою заботу.",
+                "Раньше ты всегда была более шутлива, но в какой-то момент стала такой мягкой, доброй и искренней.",
+                "Ты всегда была невероятно красивой, и на самом деле с каждым днём я вижу тебя ещё красивей.",
+                "В общем, я не хочу как-то медлить или тянуть это всё. Я долго не мог подобрать правильных слов лично, но здесь у меня достаточно времени.",
+                "Ань, будь моей девушкой. Я просто хочу, чтобы весь мир услышал о моих чувствах к тебе.",
+                "",
+                "",
+                "Кому рассказать — не поверят.",
+                "Знаешь, время идёт,",
+                "И мы не молодеем.",
+                "И всё, что оставить смогу — это лишь тексты.",
+                "Этому делу я верен."
+            ];
+
+            const typingContainer = document.getElementById('typing-text');
+            let lineIdx = 0;
+            let charIdx = 0;
+            let currentSpan = null;
+
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+
+            function typeWriter() {
+                if (lineIdx < textLines.length) {
+                    const currentStr = textLines[lineIdx];
+
+                    if (charIdx === 0) {
+                        currentSpan = document.createElement('span');
+                        
+                        if (lineIdx >= textLines.length - 5) {
+                            currentSpan.style.fontStyle = 'italic';
+                            currentSpan.style.color = '#ff99b0';
+                        }
+                        
+                        typingContainer.appendChild(currentSpan);
+                        typingContainer.appendChild(cursor);
+                    }
+
+                    if (charIdx < currentStr.length) {
+                        currentSpan.textContent += currentStr.charAt(charIdx);
+                        charIdx++;
+
+                        
+                        let speed = Math.random() * 30 + 30; 
+                        setTimeout(typeWriter, speed);
+                    } else {
+                        
+                        typingContainer.insertBefore(document.createElement('br'), cursor);
+                        
+                        lineIdx++;
+                        charIdx = 0;
+                        setTimeout(typeWriter, 500); 
+                    }
+                }
+            }
+
+            setTimeout(typeWriter, 2500);
+        }
+    </script>
+</body>
+</html>
